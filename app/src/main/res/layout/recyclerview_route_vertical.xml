@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data> 
+        <variable
+            name="route"
+            type="io.door2door.transitapp.models.Route"/>
+        <variable
+            name="handler"
+            type="io.door2door.transitapp.adapters.RouteRecyclerViewDataAdapter"/>
+    </data>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/cardView"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true"
+        android:onClick="@{(v) -> handler.onCardViewClicked(v,route)}"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp">
+            <TextView
+                android:id="@+id/txtProvider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:text="@{handler.setProviderDisplayName(route.provider)}"
+                android:textColor="@android:color/black"
+                android:textSize="15sp" />
+            <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewSegmentHorizontal"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_below="@+id/txtProvider"
+            tools:context=".activities.RouteActivity"
+            android:orientation="horizontal"
+            tools:listitem="@layout/recyclerview_segment_horizontal"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recyclerViewSegmentHorizontal"
+                >
+                <TextView
+                    android:id="@+id/txtPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textColor="@android:color/black"
+                    android:text="@{handler.setPrice(route)}"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/txtSegmentDetailLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:textColor="@android:color/black"
+                    android:text="@{handler.setSegmentDetailLayout(route.segments)}"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/txtSegmentDuration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/black"
+                    android:gravity="right"
+                    android:text="@{handler.setDuration(route.segments)}"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
+</layout>
