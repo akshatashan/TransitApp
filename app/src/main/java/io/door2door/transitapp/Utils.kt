@@ -1,10 +1,16 @@
 package io.door2door.transitapp
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.util.Log
+import com.caverock.androidsvg.SVG
+import com.caverock.androidsvg.SVGParseException
 import io.door2door.transitapp.models.Attributes
 import io.door2door.transitapp.models.Price
 import io.door2door.transitapp.models.Segment
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.DecimalFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -18,6 +24,38 @@ class Utils {
 
     companion object {
         val TAG = "Utils"
+
+        fun svgToBitmap(context: Context, size: Int, url: String, color: Int): Bitmap? {
+            var size = size
+            var bmp: Bitmap? = null
+            try {
+                size = (size * context.resources.displayMetrics.density.toInt())
+                val svg = readSvg(url)
+                bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bmp)
+                canvas.drawColor(color)
+                svg!!.renderToCanvas(canvas)
+                return bmp
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            return null
+        }
+
+        fun readSvg(url: String): SVG? {
+            var svg: SVG? = null
+            try {
+                val url = URL(url)
+                val urlConnection = url.openConnection() as HttpURLConnection
+                val inputStream = urlConnection.inputStream
+                svg = com.caverock.androidsvg.SVG.getFromInputStream(inputStream)
+                return svg
+            } catch (ex: SVGParseException) {
+                Log.d(TAG, ex.cause.toString())
+            }
+            return null
+        }
 
         fun setDuration(mContext: Context, lastDt: String, firstDt: String): String {
             var strDuration: String = ""
@@ -49,10 +87,10 @@ class Utils {
             return outputDate
         }
 
-        fun setSegmentLayoutParams(segmentList: ArrayList<Segment>?): String {
+        fun setSegmentLayoutParams(context:Context, segmentList: ArrayList<Segment>?): String {
             val firstSegmentFirstStop = segmentList!!.first().stops.first()
             val lastSegmentLastStop = segmentList!!.last().stops.last()
-            return (setTime(firstSegmentFirstStop.datetime!!) + " -> " + setTime(lastSegmentLastStop.datetime!!))
+            return (setTime(firstSegmentFirstStop.datetime!!) + " -> " + setTime(lastSegmentLastStop.datetime!!) + context.resources.getString(R.string.minutes) )
         }
 
         fun setProviderDisplayName(provider: String?, hashMapAttributes: HashMap<String, Attributes>): String? {

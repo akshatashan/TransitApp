@@ -11,6 +11,7 @@ package io.door2door.transitapp.adapters
 import android.content.Context
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -38,12 +39,14 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
         val viewDataBinding = customViewHolder.viewDataBinding
         viewDataBinding.setVariable(BR.route, mRouteList!![i])
         viewDataBinding.setVariable(BR.handler, this)
-        //TODO: segment inflation
+        val segmentRecyclerViewAdapter = SegmentRecyclerViewAdapter(mContext, mSparseArrayIcons, mRouteList!![i], mProviderAttributes)
+        viewDataBinding.recyclerViewSegmentHorizontal.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
+        viewDataBinding.recyclerViewSegmentHorizontal.adapter = segmentRecyclerViewAdapter
 
     }
 
     fun onCardViewClicked(v: View, route: Route) {
-        //start a new activity - SegmentDetailActivity
+        //TODO: segment inflation
     }
 
     override fun getItemCount(): Int {
@@ -55,7 +58,7 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
     }
 
     fun setSegmentDetailLayout(segmentList: ArrayList<Segment>?): String {
-        return Utils.setSegmentLayoutParams(segmentList!!)
+        return Utils.setSegmentLayoutParams(mContext,segmentList!!)
     }
 
     fun setPrice(route: Route): String {
