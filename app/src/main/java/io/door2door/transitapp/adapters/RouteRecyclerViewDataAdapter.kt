@@ -9,6 +9,7 @@ package io.door2door.transitapp.adapters
 
 
 import android.content.Context
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
 import android.support.v7.widget.LinearLayoutManager
@@ -20,8 +21,10 @@ import android.view.ViewGroup
 import io.door2door.transitapp.BR
 import io.door2door.transitapp.R
 import io.door2door.transitapp.Utils
+import io.door2door.transitapp.activities.SegmentDetailActivity
 import io.door2door.transitapp.databinding.RecyclerviewRouteVerticalBinding
 import io.door2door.transitapp.models.Attributes
+import io.door2door.transitapp.models.Price
 import io.door2door.transitapp.models.Route
 import io.door2door.transitapp.models.Segment
 import java.util.*
@@ -46,7 +49,12 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
     }
 
     fun onCardViewClicked(v: View, route: Route) {
-        //TODO: segment inflation
+        val intent = Intent(mContext, SegmentDetailActivity::class.java)
+        intent.putExtra(SegmentDetailActivity.ROUTE_LIST, mRouteList)
+        intent.putExtra(SegmentDetailActivity.POSITION, mRouteList!!.indexOf(route))
+        intent.putExtra(SegmentDetailActivity.ROUTE, route)
+        intent.putExtra(SegmentDetailActivity.PROVIDER_ATTRIBUTES, mProviderAttributes)
+        mContext.startActivity(intent)
     }
 
     override fun getItemCount(): Int {
@@ -54,11 +62,12 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
     }
 
     fun setProviderDisplayName(provider: String?): String? {
-        return Utils.setProviderDisplayName(provider,mProviderAttributes)
+        if (mProviderAttributes[provider]!!.display_name == null) return ""
+        return mProviderAttributes[provider]!!.display_name.toString()
     }
 
     fun setSegmentDetailLayout(segmentList: ArrayList<Segment>?): String {
-        return Utils.setSegmentLayoutParams(mContext,segmentList!!)
+        return Utils.setSegmentLayoutParams(segmentList!!)
     }
 
     fun setPrice(route: Route): String {

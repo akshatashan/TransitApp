@@ -65,7 +65,7 @@ class Utils {
                 val lngDtDiff = (dtLastStopDate!!.time - dtFirstStopDate!!.time) / 60 / 1000
                 strDuration = lngDtDiff.toString()
             }
-            return strDuration
+            return strDuration + mContext.resources.getString(R.string.minutes)
         }
 
         fun convert(strDate: String): Date? {
@@ -87,10 +87,10 @@ class Utils {
             return outputDate
         }
 
-        fun setSegmentLayoutParams(context:Context, segmentList: ArrayList<Segment>?): String {
+        fun setSegmentLayoutParams(segmentList: ArrayList<Segment>?): String {
             val firstSegmentFirstStop = segmentList!!.first().stops.first()
             val lastSegmentLastStop = segmentList!!.last().stops.last()
-            return (setTime(firstSegmentFirstStop.datetime!!) + " -> " + setTime(lastSegmentLastStop.datetime!!) + context.resources.getString(R.string.minutes) )
+            return (setTime(firstSegmentFirstStop.datetime!!) + " -> " + setTime(lastSegmentLastStop.datetime!!))
         }
 
         fun setProviderDisplayName(provider: String?, hashMapAttributes: HashMap<String, Attributes>): String? {

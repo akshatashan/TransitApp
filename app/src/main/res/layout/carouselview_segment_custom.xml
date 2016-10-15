@@ -1,0 +1,16 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.synnapps.carouselview.CarouselView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/customCarouselView"
+        app:strokeColor="@color/colorPrimary"
+        app:pageColor="#00000000"
+        app:radius="6dp"
+        app:autoPlay="false"
+        app:indicatorGravity="top|center_horizontal">
+    </com.synnapps.carouselview.CarouselView>
+</RelativeLayout>
