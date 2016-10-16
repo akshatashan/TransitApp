@@ -24,7 +24,6 @@ import io.door2door.transitapp.Utils
 import io.door2door.transitapp.activities.SegmentDetailActivity
 import io.door2door.transitapp.databinding.RecyclerviewRouteVerticalBinding
 import io.door2door.transitapp.models.Attributes
-import io.door2door.transitapp.models.Price
 import io.door2door.transitapp.models.Route
 import io.door2door.transitapp.models.Segment
 import java.util.*

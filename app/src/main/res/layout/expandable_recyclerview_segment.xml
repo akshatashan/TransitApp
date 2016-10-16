@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<data> 
+    <import type="android.view.View" />
+    <variable
+        name="detail"
+        type="io.door2door.transitapp.models.Segment"/>
+    <variable
+        name="handler"
+        type="io.door2door.transitapp.adapters.SegmentViewHolder"/>
+</data>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/txtSegmentStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            android:text="@{handler.setTime(detail.stops[0].datetime)}"/>
+
+        <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin">
+            <TextView android:id="@+id/txtSegmentStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14dp"
+                android:padding="2dp"
+                android:textStyle="bold"
+                android:text="@{handler.setSegmentStart(detail)}"
+                android:textColor="@{handler.setColor(detail.color)}"/>
+
+            <TextView android:id="@+id/txtSegmentEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtSegmentStart"
+                android:padding="2dp"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:text="@{detail.description ?? @string/no_display_name}"
+                android:textColor="@{handler.setColor(detail.color)}"
+                />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout"
+                android:layout_below="@+id/txtSegmentEnd"
+                >
+
+                <TextView android:id="@+id/txtTransportMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:textSize="14dp"
+                    android:textStyle="normal"
+                    android:text="@{detail.travel_mode}"/>
+
+                <TextView android:id="@+id/txtNoOfStops"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:textSize="14dp"
+                    android:textStyle="normal"
+                    android:text="@{detail.num_stops > 0 ? String.valueOf(detail.num_stops) + @string/stops : @string/no_display_name}"/>
+
+                <TextView android:id="@+id/txtMinutes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14dp"
+                    android:textStyle="normal"
+                    android:text="@{handler.setDuration(detail.stops)}"
+                />
+
+                <ImageView android:id="@+id/imgArrowExpand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_expand_more_black_24dp"
+                    android:visibility="@{handler.showHideArrow(detail.num_stops) ? View.VISIBLE : View.INVISIBLE}"
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>
+</layout>

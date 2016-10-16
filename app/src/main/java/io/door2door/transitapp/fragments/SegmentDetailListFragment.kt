@@ -18,6 +18,7 @@ import com.synnapps.carouselview.ViewListener
 import io.door2door.transitapp.R
 import io.door2door.transitapp.Utils
 import io.door2door.transitapp.activities.SegmentDetailActivity
+import io.door2door.transitapp.adapters.SegmentExpandableRecyclerAdapter
 import io.door2door.transitapp.adapters.SegmentRecyclerViewAdapter
 import io.door2door.transitapp.models.Attributes
 import io.door2door.transitapp.models.Route
@@ -31,7 +32,8 @@ import java.util.*
  * Inflatiion hierarchy -  carouselview_segment_custom - contains the custom carousel view (list of routes)
  *                          carouselview_segment_detail - viewpager for each route (single route)
  *                                                              - inflates recyclerview_segment_horizontal (list of segments)
- */
+ *                                                              - inflates expandable_recyclerview_segment (segment summary)
+ *                                                                                  - inflated childview_stop (segment detail)*/
 class SegmentDetailListFragment: Fragment() {
 
     lateinit var lstRoutes: ArrayList<Route>
@@ -89,7 +91,11 @@ class SegmentDetailListFragment: Fragment() {
                 val txtSegmentDuration =  cardView.findViewById(R.id.txtSegmentDuration) as TextView
                 txtSegmentDuration.text = Utils.setDuration(activity,currentRoute.segments)
 
-                //TODO: bind the segment and its stops
+                //bind the segment and its stops
+                val recyclerView = customView.findViewById(R.id.recyclerview) as RecyclerView
+                recyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+                val mAdapter = SegmentExpandableRecyclerAdapter(activity, lstRoutes[position].segments!!)
+                recyclerView.adapter = mAdapter
 
                 val recyclerViewSegmentHorizontal = cardView.findViewById(R.id.recyclerViewSegmentHorizontal) as RecyclerView
                 recyclerViewSegmentHorizontal.setHasFixedSize(true)

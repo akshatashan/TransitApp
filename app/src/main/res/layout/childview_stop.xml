@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data> 
+        <variable
+            name="stop"
+            type="io.door2door.transitapp.models.Stop"/>
+        <variable
+            name="handler"
+            type="io.door2door.transitapp.adapters.StopViewHolder"/>
+    </data>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView android:id="@+id/txtStopStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:textStyle="normal"
+            android:text="@{handler.getTime(stop.datetime)}"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin">
+        <TextView android:id="@+id/txtStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:padding="2dp"
+            android:textStyle="normal"
+            android:text="@{stop.name}"/>
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>
+</layout>
