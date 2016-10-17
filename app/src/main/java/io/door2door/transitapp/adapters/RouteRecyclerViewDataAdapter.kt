@@ -11,10 +11,9 @@ package io.door2door.transitapp.adapters
 import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
-import android.graphics.Bitmap
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.SparseArray
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,8 +28,8 @@ import io.door2door.transitapp.models.Segment
 import java.util.*
 
 class RouteRecyclerViewDataAdapter(private val mContext: Context,
-                                   private val mSparseArrayIcons: SparseArray<Bitmap>,
-                                   private val mRouteList: ArrayList<Route>?, private val mProviderAttributes:  HashMap<String, Attributes>) : RecyclerView.Adapter<RouteRecyclerViewDataAdapter.RouteHolder>() {
+                                   private val mRouteList: ArrayList<Route>?,
+                                   private val mProviderAttributes:  HashMap<String, Attributes>) : RecyclerView.Adapter<RouteRecyclerViewDataAdapter.RouteHolder>() {
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): RouteHolder {
         val binding = DataBindingUtil.inflate<RecyclerviewRouteVerticalBinding>(LayoutInflater.from(viewGroup.context), R.layout.recyclerview_route_vertical, viewGroup, false)
@@ -41,11 +40,12 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
         val viewDataBinding = customViewHolder.viewDataBinding
         viewDataBinding.setVariable(BR.route, mRouteList!![i])
         viewDataBinding.setVariable(BR.handler, this)
-        val segmentRecyclerViewAdapter = SegmentRecyclerViewAdapter(mContext, mSparseArrayIcons, mRouteList!![i], mProviderAttributes)
+        val segmentRecyclerViewAdapter = SegmentRecyclerViewAdapter(mRouteList!![i])
         viewDataBinding.recyclerViewSegmentHorizontal.layoutManager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
         viewDataBinding.recyclerViewSegmentHorizontal.adapter = segmentRecyclerViewAdapter
 
     }
+
 
     fun onCardViewClicked(v: View, route: Route) {
         val intent = Intent(mContext, SegmentDetailActivity::class.java)
@@ -61,6 +61,7 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
     }
 
     fun setProviderDisplayName(provider: String?): String? {
+        Log.d("Test", "called provider" + provider)
         if (mProviderAttributes[provider]!!.display_name == null) return ""
         return mProviderAttributes[provider]!!.display_name.toString()
     }

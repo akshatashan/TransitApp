@@ -1,14 +1,20 @@
 package io.door2door.transitapp
 
 import android.content.Context
+import android.databinding.BindingAdapter
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.util.Log
+import android.util.SparseArray
+import android.widget.ImageView
 import com.caverock.androidsvg.SVG
 import com.caverock.androidsvg.SVGParseException
 import io.door2door.transitapp.models.Attributes
 import io.door2door.transitapp.models.Price
 import io.door2door.transitapp.models.Segment
+import org.jetbrains.anko.async
+import org.jetbrains.anko.uiThread
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.DecimalFormat
@@ -21,26 +27,41 @@ import java.util.*
  */
 
 class Utils {
+    object ImageCache {
+        var sparseArrayIcons: SparseArray<Bitmap>
+        init {
+            sparseArrayIcons = SparseArray<Bitmap>()
+        }
+    }
 
     companion object {
         val TAG = "Utils"
 
-        fun svgToBitmap(context: Context, size: Int, url: String, color: Int): Bitmap? {
-            var size = size
-            var bmp: Bitmap? = null
-            try {
-                size = (size * context.resources.displayMetrics.density.toInt())
-                val svg = readSvg(url)
-                bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(bmp)
-                canvas.drawColor(color)
-                svg!!.renderToCanvas(canvas)
-                return bmp
-            } catch (e: Exception) {
-                e.printStackTrace()
+        fun svgToBitmap(view: ImageView, size: Int, url: String) {
+            if (Utils.ImageCache.sparseArrayIcons.indexOfKey(url.hashCode()) > -1) {
+                Log.d("Utils", "load from array")
+                view.setImageBitmap(ImageCache.sparseArrayIcons.get(url.hashCode()))
             }
-
-            return null
+            else{
+                var size = (size * view.context.resources.displayMetrics.density.toInt())
+            async() {
+                Log.d("Utils", "load from network")
+                var bmp: Bitmap? = null
+//                try {
+                    val svg = readSvg(url)
+                    bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+                    val canvas = Canvas(bmp)
+                    svg!!.renderToCanvas(canvas)
+                    ImageCache.sparseArrayIcons.put(url.hashCode(), bmp)
+                uiThread {
+                    Log.d(TAG, "set the image" + url)
+                    view.setImageBitmap(ImageCache.sparseArrayIcons.get(url.hashCode()))
+                }
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                }
+            }
+            }
         }
 
         fun readSvg(url: String): SVG? {
@@ -111,5 +132,16 @@ class Utils {
             val lastSegmentLastStop = segmentList!!.last().stops.last()
             return setDuration(mContext, lastSegmentLastStop.datetime!!, firstSegmentFirstStop.datetime!!)
         }
+
+        fun setCardBackGroundColor(color: String?) : Int{
+            return Color.parseColor(color)
+        }
+    }
+}
+
+@BindingAdapter("bind:url")
+fun loadImage(view: ImageView, url: String?) {
+    if(url!=null) {
+        Utils.svgToBitmap(view, 20, url!!)
     }
 }
