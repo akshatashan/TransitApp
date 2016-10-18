@@ -61,7 +61,6 @@ class RouteRecyclerViewDataAdapter(private val mContext: Context,
     }
 
     fun setProviderDisplayName(provider: String?): String? {
-        Log.d("Test", "called provider" + provider)
         if (mProviderAttributes[provider]!!.display_name == null) return ""
         return mProviderAttributes[provider]!!.display_name.toString()
     }

@@ -38,14 +38,14 @@
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
             <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerViewSegmentHorizontal"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:layout_below="@+id/txtProvider"
-            tools:context=".activities.RouteActivity"
-            android:orientation="horizontal"
-            tools:listitem="@layout/recyclerview_segment_horizontal"/>
+                android:id="@+id/recyclerViewSegmentHorizontal"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_below="@+id/txtProvider"
+                tools:context=".activities.RouteActivity"
+                android:orientation="horizontal"
+                tools:listitem="@layout/recyclerview_segment_horizontal"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

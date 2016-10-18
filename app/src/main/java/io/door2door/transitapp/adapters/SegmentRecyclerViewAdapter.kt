@@ -3,6 +3,7 @@ package io.door2door.transitapp.adapters
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import io.door2door.transitapp.R
 import io.door2door.transitapp.Utils
@@ -10,6 +11,7 @@ import io.door2door.transitapp.databinding.RecyclerviewSegmentHorizontalBinding
 import io.door2door.transitapp.models.Route
 
 class SegmentRecyclerViewAdapter(private val mRoute: Route?) : RecyclerView.Adapter<io.door2door.transitapp.adapters.SegmentRecyclerViewAdapter.SegmentHolder>() {
+
     override fun getItemCount(): Int {
         return if (null != mRoute!!.segments) mRoute!!.segments!!.count() else 0
     }
@@ -29,7 +31,12 @@ class SegmentRecyclerViewAdapter(private val mRoute: Route?) : RecyclerView.Adap
         return Utils.setCardBackGroundColor(color)
     }
 
-    class SegmentHolder(val viewDataBinding: RecyclerviewSegmentHorizontalBinding) : RecyclerView.ViewHolder(viewDataBinding.root) {
+    class SegmentHolder(val viewDataBinding: RecyclerviewSegmentHorizontalBinding) :
+            RecyclerView.ViewHolder(viewDataBinding.root), View.OnClickListener  {
+        var listener: SegmentViewHolder? = null
+        override fun onClick(p0: View?) {
+
+        }
 
         init {
             this.viewDataBinding.executePendingBindings()

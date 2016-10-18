@@ -1,19 +1,18 @@
 package io.door2door.transitapp.fragments
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.synnapps.carouselview.CarouselView
+import com.synnapps.carouselview.CarouselViewPager
 import com.synnapps.carouselview.ViewListener
 import io.door2door.transitapp.R
 import io.door2door.transitapp.Utils
@@ -36,16 +35,17 @@ import java.util.*
  *                                                                                  - inflated childview_stop (segment detail)*/
 class SegmentDetailListFragment: Fragment() {
 
-    lateinit var lstRoutes: ArrayList<Route>
+    var routeCount: Int=0
     lateinit var hashMapAttributes: HashMap<String, Attributes>
     private var mDataPassing: MapSegmentInterface? = null
     private var position: Int =0
+    lateinit  var customCarouselView: CarouselView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
         if (arguments != null) {
-            lstRoutes = arguments.getParcelableArrayList(SegmentDetailActivity.ROUTE_LIST)
+            routeCount = arguments.getInt(SegmentDetailActivity.ROUTE_COUNT)
             hashMapAttributes = arguments.getSerializable(SegmentDetailActivity.PROVIDER_ATTRIBUTES) as HashMap<String, Attributes>
             position = arguments.getInt(SegmentDetailActivity.POSITION)
         }
@@ -56,9 +56,9 @@ class SegmentDetailListFragment: Fragment() {
         // Inflate the layout for this fragment
 
         val view = inflater!!.inflate(R.layout.carouselview_segment_custom, container, false)
-        val customCarouselView = view.findViewById(R.id.customCarouselView) as CarouselView
+        customCarouselView = view.findViewById(R.id.customCarouselView) as CarouselView
 
-        customCarouselView.pageCount = lstRoutes.size
+        customCarouselView.pageCount = routeCount
         customCarouselView.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
             }
@@ -73,42 +73,47 @@ class SegmentDetailListFragment: Fragment() {
 
         customCarouselView.setViewListener(object: ViewListener {
             override fun setViewForPosition(position: Int): View {
-                val currentRoute = lstRoutes[position]
                 val customView = inflater!!.inflate(R.layout.carouselview_segment_detail, null)
-
-                //bind the route with segment
-                val txtProvider = customView.findViewById(R.id.txtProvider) as TextView
-                txtProvider.text = Utils.setProviderDisplayName(currentRoute.provider, hashMapAttributes)
-
-                val cardView = customView.findViewById(R.id.cardView) as CardView
-                val txtPrice = cardView.findViewById(R.id.txtPrice) as TextView
-
-                txtPrice.text = Utils.setPrice(activity, currentRoute.price)
-
-                val txtSegmentDetailLayout = cardView.findViewById(R.id.txtSegmentDetailLayout) as TextView
-                txtSegmentDetailLayout.text = Utils.setSegmentLayoutParams(currentRoute.segments)
-
-                val txtSegmentDuration =  cardView.findViewById(R.id.txtSegmentDuration) as TextView
-                txtSegmentDuration.text = Utils.setDuration(activity,currentRoute.segments)
-
-                //bind the segment and its stops
-                val recyclerView = customView.findViewById(R.id.recyclerview) as RecyclerView
-                recyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-                val mAdapter = SegmentExpandableRecyclerAdapter(activity, lstRoutes[position].segments!!)
-                recyclerView.adapter = mAdapter
-
-                val recyclerViewSegmentHorizontal = cardView.findViewById(R.id.recyclerViewSegmentHorizontal) as RecyclerView
-                recyclerViewSegmentHorizontal.setHasFixedSize(true)
-                recyclerViewSegmentHorizontal.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
-                val sparseArrayIcons = SparseArray<Bitmap>()
-                val segmentRecyclerViewAdapter = SegmentRecyclerViewAdapter(activity,sparseArrayIcons, lstRoutes[position], hashMapAttributes)
-                recyclerViewSegmentHorizontal.adapter = segmentRecyclerViewAdapter
-
                 return customView
             }
         })
-        customCarouselView.setCurrentItem(position)
         return view
+    }
+
+    private fun  updateView(customView: View, currentRoute: Route) {
+        val txtProvider = customView.findViewById(R.id.txtProvider) as TextView
+        txtProvider.text = Utils.setProviderDisplayName(currentRoute.provider, hashMapAttributes)
+
+        val cardView = customView.findViewById(R.id.cardView) as CardView
+        val txtPrice = cardView.findViewById(R.id.txtPrice) as TextView
+
+        txtPrice.text = Utils.setPrice(activity, currentRoute.price)
+
+        val txtSegmentDetailLayout = cardView.findViewById(R.id.txtSegmentDetailLayout) as TextView
+        txtSegmentDetailLayout.text = Utils.setSegmentLayoutParams(currentRoute.segments)
+
+        val txtSegmentDuration =  cardView.findViewById(R.id.txtSegmentDuration) as TextView
+        txtSegmentDuration.text = Utils.setDuration(activity,currentRoute.segments)
+
+        //bind the segment and its stops
+        val recyclerView = customView.findViewById(R.id.recyclerview) as RecyclerView
+        recyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        val mAdapter = SegmentExpandableRecyclerAdapter(activity, currentRoute.segments!!)
+        recyclerView.adapter = mAdapter
+
+        val recyclerViewSegmentHorizontal = cardView.findViewById(R.id.recyclerViewSegmentHorizontal) as RecyclerView
+        recyclerViewSegmentHorizontal.setHasFixedSize(true)
+        recyclerViewSegmentHorizontal.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+        val segmentRecyclerViewAdapter = SegmentRecyclerViewAdapter(currentRoute)
+        recyclerViewSegmentHorizontal.adapter = segmentRecyclerViewAdapter
+    }
+
+    fun updateSegmentDetailList(currentRoute: Route, currentPosition: Int){
+        val carouselViewPager = customCarouselView.getChildAt(0) as CarouselViewPager
+        val segmentDetail = carouselViewPager.getChildAt(currentPosition)
+        if(segmentDetail != null) {
+            updateView(segmentDetail, currentRoute)
+        }
     }
 
     override fun onAttach(context: Context?) {
@@ -120,16 +125,18 @@ class SegmentDetailListFragment: Fragment() {
         }
     }
 
+
+
     override fun onDetach() {
         super.onDetach()
         mDataPassing = null
     }
 
     companion object {
-        fun newInstance(position: Int, lstRoute : ArrayList<Route>, hashMapAttributes: HashMap<String, Attributes>): SegmentDetailListFragment {
+        fun newInstance(position: Int, routeCount : Int, hashMapAttributes: HashMap<String, Attributes>): SegmentDetailListFragment {
             val fragment = SegmentDetailListFragment()
             val args = Bundle()
-            args.putParcelableArrayList(SegmentDetailActivity.ROUTE_LIST,lstRoute)
+            args.putInt(SegmentDetailActivity.ROUTE_COUNT, routeCount)
             args.putSerializable(SegmentDetailActivity.PROVIDER_ATTRIBUTES, hashMapAttributes)
             args.putInt(SegmentDetailActivity.POSITION, position)
             fragment.arguments = args

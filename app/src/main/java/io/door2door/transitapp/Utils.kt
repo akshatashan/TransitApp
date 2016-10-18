@@ -39,13 +39,11 @@ class Utils {
 
         fun svgToBitmap(view: ImageView, size: Int, url: String) {
             if (Utils.ImageCache.sparseArrayIcons.indexOfKey(url.hashCode()) > -1) {
-                Log.d("Utils", "load from array")
                 view.setImageBitmap(ImageCache.sparseArrayIcons.get(url.hashCode()))
             }
             else{
                 var size = (size * view.context.resources.displayMetrics.density.toInt())
             async() {
-                Log.d("Utils", "load from network")
                 var bmp: Bitmap? = null
 //                try {
                     val svg = readSvg(url)
@@ -54,13 +52,9 @@ class Utils {
                     svg!!.renderToCanvas(canvas)
                     ImageCache.sparseArrayIcons.put(url.hashCode(), bmp)
                 uiThread {
-                    Log.d(TAG, "set the image" + url)
                     view.setImageBitmap(ImageCache.sparseArrayIcons.get(url.hashCode()))
+                    }
                 }
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-            }
             }
         }
 

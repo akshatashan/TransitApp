@@ -34,8 +34,9 @@ class SegmentDetailActivity : AppCompatActivity(), MapSegmentInterface {
     private var mMap: GoogleMap? = null
     lateinit var lstRoutes: ArrayList<Route>
     lateinit var hashMapAttributes: HashMap<String, Attributes>
-    private var position: Int = 0
+    private var currentPosition: Int = 0
     private var routeCount: Int = 0
+    lateinit var segmentCarouselFragment: SegmentDetailListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,20 +49,20 @@ class SegmentDetailActivity : AppCompatActivity(), MapSegmentInterface {
         val intent = intent
         lstRoutes = intent.extras.get(SegmentDetailActivity.ROUTE_LIST) as ArrayList<Route>
         hashMapAttributes = intent.extras.get(SegmentDetailActivity.PROVIDER_ATTRIBUTES) as HashMap<String, Attributes>
-        position = intent.extras.get(SegmentDetailActivity.POSITION) as Int
-        val currentRoute = intent.extras.get(SegmentDetailActivity.ROUTE) as Route
+        currentPosition = intent.extras.get(SegmentDetailActivity.POSITION) as Int
+//        val currentRoute = intent.extras.get(SegmentDetailActivity.ROUTE) as Route
 
 
         val mapFragment = SupportMapFragment.newInstance()
         supportFragmentManager.beginTransaction().replace(R.id.mapContainer, mapFragment).commit()
         mapFragment.getMapAsync{p0 ->
             mMap = p0
-            drawPolyline(position)
-//            val segmentDetailFragment = supportFragmentManager.findFragmentById(R.id.segmentCarouselContainer) as SegmentDetailListFragment
-//            segmentDetailFragment.updateSegmentDetailList(position)
+            if(segmentCarouselFragment!=null){
+                updateFragments(currentPosition)
+            }
         }
 
-        val segmentCarouselFragment = SegmentDetailListFragment.newInstance(position,  lstRoutes, hashMapAttributes)
+        segmentCarouselFragment = SegmentDetailListFragment.newInstance(currentPosition,  lstRoutes.size, hashMapAttributes)
         supportFragmentManager.beginTransaction().replace(R.id.segmentCarouselContainer, segmentCarouselFragment).commit()
 
         mLayout = findViewById(R.id.sliding_layout) as SlidingUpPanelLayout
@@ -78,17 +79,13 @@ class SegmentDetailActivity : AppCompatActivity(), MapSegmentInterface {
     }
 
     override fun setCurrentPosition(position: Int) {
-        mCurrentSegment = position
+        currentPosition = position
         if(mMap!=null){
-            drawPolyline(position)
+            updateFragments(currentPosition)
         }
     }
 
-    private fun getRoute(currentPosition: Int): Route{
-        return lstRoutes[currentPosition]
-    }
-
-    private fun  drawPolyline(currentPosition: Int) {
+    private fun  updateFragments(currentPosition: Int) {
         var decodedPath: List<LatLng>? = null
         var strColor: String?
         mMap!!.clear()
@@ -104,8 +101,12 @@ class SegmentDetailActivity : AppCompatActivity(), MapSegmentInterface {
             }
         }
         if(decodedPath!=null && decodedPath!!.count() > 0) {
-            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(decodedPath!!.first(), 14.0f))
+            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(decodedPath!!.first(), 13.0f))
         }
+
+        //bind the segment list details to the carousel view page for each route
+        segmentCarouselFragment.updateSegmentDetailList(lstRoutes[currentPosition],currentPosition)
+        segmentCarouselFragment.customCarouselView.setCurrentItem(currentPosition)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -123,6 +124,7 @@ class SegmentDetailActivity : AppCompatActivity(), MapSegmentInterface {
     companion object {
         private val TAG = "SegmentDetailActivity"
         val ROUTE_LIST = "route_list"
+        val ROUTE_COUNT = "route_count"
         val ROUTE = "route"
         val POSITION = "position"
         val PROVIDER_ATTRIBUTES= "provider_attributes"
