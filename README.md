@@ -1,5 +1,8 @@
 # Transit App
-Sample version of a Transit App as per the task specified at https://github.com/door2door-io/transit-app-task?files=1
+Sample version of a Transit App as per the task specified
+Extract routes from the static json file and build a simple transit app.
+The given file contains 9 routes to go from point A to point B
+The project displays all routes and the details of each route
 
 ## Prerequisites
   - JDK 8
